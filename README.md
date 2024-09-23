@@ -1,8 +1,8 @@
-[![GitHub Action](https://github.com/kora-projects/kora-java-crud-template/workflows/Build%20Master/badge.svg)](https://github.com/kora-projects/kora-java-crud-template/actions?query=workflow%3A%22Build%20Master%22++)
+[![GitHub Action](https://github.com/kora-projects/kora-kotlin-crud-template/workflows/Build%20Master/badge.svg)](https://github.com/kora-projects/kora-kotlin-crud-template/actions?query=workflow%3A%22Build%20Master%22++)
 
-# Шаблон приложения Kora Java CRUD
+# Шаблон приложения Kora Kotlin CRUD
 
-Пример сервиса реализованного на Kora с HTTP [CRUD](https://github.com/swagger-api/swagger-petstore) API, 
+Пример Kotlin сервиса реализованного на Kora с HTTP [CRUD](https://github.com/swagger-api/swagger-petstore) API, 
 в качестве базы данных выступает Postgres, используется кэш Caffeine, а также другие модули которые использовались бы в реальном приложении в бою.
 
 В примере использовались модули:
@@ -17,6 +17,12 @@
 - [Caffeine кеш](https://kora-projects.github.io/kora-docs/ru/documentation/cache/#caffeine)
 
 ## Build
+
+Собрать классы (может потребоваться запустить 2 раза из-за APT):
+
+```shell
+./gradlew classes
+```
 
 Собрать артефакт:
 

@@ -11,8 +11,10 @@ buildscript {
 plugins {
     id("org.openapi.generator") version ("7.4.0")
     id("application")
+    id("jacoco")
     kotlin("kapt") version ("1.9.10")
     kotlin("jvm") version ("1.9.10")
+    id("org.flywaydb.flyway") version ("8.4.2")
     id("com.google.devtools.ksp") version ("1.9.10-1.0.13")
 }
 
@@ -116,6 +118,13 @@ tasks.withType<JavaExec> {
     )
 }
 
+flyway {
+    url = "jdbc:postgresql://$postgresHost:$postgresPort/$postgresDatabase"
+    user = postgresUser
+    password = postgresPassword
+    locations = arrayOf("classpath:db/migration")
+}
+
 tasks.distTar {
     archiveFileName.set("application.tar")
 }
@@ -129,5 +138,12 @@ tasks.test {
     reports {
         html.required = false
         junitXml.required = false
+    }
+}
+
+tasks.jacocoTestReport {
+    reports {
+        xml.required = true
+        html.outputLocation = layout.buildDirectory.dir("jacocoHtml")
     }
 }
