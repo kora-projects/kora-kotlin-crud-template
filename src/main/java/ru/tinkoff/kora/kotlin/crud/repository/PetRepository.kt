@@ -1,25 +1,17 @@
-package ru.tinkoff.kora.kotlin.example.crud.repository
+package ru.tinkoff.kora.kotlin.crud.repository
 
 import ru.tinkoff.kora.database.common.UpdateCount
 import ru.tinkoff.kora.database.common.annotation.Id
 import ru.tinkoff.kora.database.common.annotation.Query
 import ru.tinkoff.kora.database.common.annotation.Repository
 import ru.tinkoff.kora.database.jdbc.JdbcRepository
-import ru.tinkoff.kora.kotlin.example.crud.model.Pet
-import ru.tinkoff.kora.kotlin.example.crud.model.PetWithCategory
+import ru.tinkoff.kora.kotlin.crud.model.Pet
 
 @Repository
 interface PetRepository : JdbcRepository {
 
-    @Query(
-        """
-        SELECT p.id, p.name, p.status, p.category_id, c.name as category_name 
-        FROM pets p 
-        JOIN categories c on c.id = p.category_id 
-        WHERE p.id = :id
-        """
-    )
-    fun findById(id: Long): PetWithCategory?
+    @Query("SELECT %{return#selects} FROM %{return#table} WHERE id = :id")
+    fun findById(id: Long): Pet?
 
     @Id
     @Query("INSERT INTO %{entity#inserts -= id}")

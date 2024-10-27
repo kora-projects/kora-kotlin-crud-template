@@ -1,4 +1,5 @@
 import com.google.devtools.ksp.gradle.KspTask
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
@@ -21,11 +22,6 @@ plugins {
 group = property("groupId")!!
 version = property("koraVersion")!!
 
-application {
-    applicationName = "application"
-    mainClass.set("ru.tinkoff.kora.kotlin.crud.ApplicationKt")
-}
-
 kotlin {
     jvmToolchain { languageVersion.set(JavaLanguageVersion.of(17)) }
     sourceSets.main { kotlin.srcDir("build/generated/openapi") }
@@ -37,13 +33,13 @@ kotlin {
 val koraBom: Configuration by configurations.creating
 configurations {
     ksp.get().extendsFrom(koraBom)
+    compileOnly.get().extendsFrom(koraBom)
     api.get().extendsFrom(koraBom)
     implementation.get().extendsFrom(koraBom)
 }
 
 repositories {
     mavenCentral()
-    maven("https://oss.sonatype.org/content/repositories/snapshots")
 }
 
 dependencies {
@@ -73,8 +69,31 @@ dependencies {
 
     testImplementation("io.mockk:mockk:1.13.8")
     testImplementation("ru.tinkoff.kora:test-junit5")
-    testImplementation("io.goodforgod:testcontainers-extensions-postgres:0.11.0")
-    testImplementation("org.testcontainers:junit-jupiter:1.17.6")
+    testImplementation("io.goodforgod:testcontainers-extensions-postgres:0.12.0")
+    testImplementation("org.testcontainers:junit-jupiter:1.19.8")
+}
+
+application {
+    applicationName = "application"
+    mainClass.set("ru.tinkoff.kora.kotlin.crud.ApplicationKt")
+    applicationDefaultJvmArgs = listOf("-Dfile.encoding=UTF-8")
+}
+
+tasks.distTar {
+    archiveFileName.set("application.tar")
+}
+
+val postgresHost: String by project
+val postgresPort: String by project
+val postgresDatabase: String by project
+val postgresUser: String by project
+val postgresPassword: String by project
+tasks.withType<JavaExec> {
+    environment(
+        "POSTGRES_JDBC_URL" to "jdbc:postgresql://${postgresHost}:${postgresPort}/${postgresDatabase}",
+        "POSTGRES_USER" to postgresUser,
+        "POSTGRES_PASS" to postgresPassword,
+    )
 }
 
 tasks.register("openApiGenerateHttpServer", GenerateTask::class) {
@@ -101,38 +120,20 @@ tasks.withType<KspTask> {
 tasks.withType<KotlinCompile>().configureEach {
     dependsOn(tasks.named("openApiGenerateHttpServer"))
 }
-tasks.named("test") {
-    dependsOn("distTar")
-}
-
-val postgresHost: String by project
-val postgresPort: String by project
-val postgresDatabase: String by project
-val postgresUser: String by project
-val postgresPassword: String by project
-tasks.withType<JavaExec> {
-    environment(
-        "POSTGRES_JDBC_URL" to "jdbc:postgresql://${postgresHost}:${postgresPort}/${postgresDatabase}",
-        "POSTGRES_USER" to postgresUser,
-        "POSTGRES_PASS" to postgresPassword,
-    )
-}
-
-flyway {
-    url = "jdbc:postgresql://$postgresHost:$postgresPort/$postgresDatabase"
-    user = postgresUser
-    password = postgresPassword
-    locations = arrayOf("classpath:db/migration")
-}
-
-tasks.distTar {
-    archiveFileName.set("application.tar")
-}
 
 tasks.test {
+    dependsOn("distTar")
+
+    jvmArgs(
+        "-XX:+TieredCompilation",
+        "-XX:TieredStopAtLevel=1",
+    )
+
     useJUnitPlatform()
     testLogging {
+        showStandardStreams = true
         events("passed", "skipped", "failed")
+        exceptionFormat = TestExceptionFormat.FULL
     }
 
     reports {
@@ -146,4 +147,11 @@ tasks.jacocoTestReport {
         xml.required = true
         html.outputLocation = layout.buildDirectory.dir("jacocoHtml")
     }
+}
+
+flyway {
+    url = "jdbc:postgresql://$postgresHost:$postgresPort/$postgresDatabase"
+    user = postgresUser
+    password = postgresPassword
+    locations = arrayOf("classpath:db/migration")
 }

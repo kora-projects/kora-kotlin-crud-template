@@ -1,4 +1,4 @@
-package ru.tinkoff.kora.kotlin.example.crud
+package ru.tinkoff.kora.kotlin.crud
 
 import io.goodforgod.testcontainers.extensions.ContainerMode
 import io.goodforgod.testcontainers.extensions.Network
@@ -28,7 +28,7 @@ import java.time.Duration
         drop = Migration.Mode.PER_METHOD
     )
 )
-class PetControllerTests(@ConnectionPostgreSQL val connection: JdbcConnection) {
+class BlackBoxTests(@ConnectionPostgreSQL val connection: JdbcConnection) {
 
     companion object {
 
@@ -76,14 +76,11 @@ class PetControllerTests(@ConnectionPostgreSQL val connection: JdbcConnection) {
 
         // then
         connection.assertCountsEquals(1, "pets")
-        connection.assertCountsEquals(1, "categories")
         val responseBody = JSONObject(response.body())
         assertNotNull(responseBody.query("/id"))
         assertNotEquals(0L, responseBody.query("/id"))
         assertNotNull(responseBody.query("/status"))
         assertEquals(requestBody.query("/name"), responseBody.query("/name"))
-        assertNotNull(responseBody.query("/category/id"))
-        assertEquals(requestBody.query("/category/name"), responseBody.query("/category/name"))
     }
 
     @Test
@@ -92,7 +89,6 @@ class PetControllerTests(@ConnectionPostgreSQL val connection: JdbcConnection) {
         val httpClient = HttpClient.newHttpClient()
         val createRequestBody = JSONObject()
             .put("name", "doggie")
-            .put("category", JSONObject().put("name", "Dogs"))
 
         // when
         val createRequest = HttpRequest.newBuilder()
@@ -104,7 +100,6 @@ class PetControllerTests(@ConnectionPostgreSQL val connection: JdbcConnection) {
         val createResponse = httpClient.send(createRequest, HttpResponse.BodyHandlers.ofString())
         assertEquals(200, createResponse.statusCode(), createResponse.body())
         connection.assertCountsEquals(1, "pets")
-        connection.assertCountsEquals(1, "categories")
         val createResponseBody = JSONObject(createResponse.body())
 
         // then
@@ -127,7 +122,6 @@ class PetControllerTests(@ConnectionPostgreSQL val connection: JdbcConnection) {
         val httpClient = HttpClient.newHttpClient()
         val createRequestBody = JSONObject()
             .put("name", "doggie")
-            .put("category", JSONObject().put("name", "Dogs"))
 
         val createRequest = HttpRequest.newBuilder()
             .POST(HttpRequest.BodyPublishers.ofString(createRequestBody.toString()))
@@ -138,14 +132,12 @@ class PetControllerTests(@ConnectionPostgreSQL val connection: JdbcConnection) {
         val createResponse = httpClient.send(createRequest, HttpResponse.BodyHandlers.ofString())
         assertEquals(200, createResponse.statusCode(), createResponse.body())
         connection.assertCountsEquals(1, "pets")
-        connection.assertCountsEquals(1, "categories")
         val createResponseBody = JSONObject(createResponse.body())
 
         // when
         val updateRequestBody = JSONObject()
             .put("name", "doggie2")
             .put("status", "pending")
-            .put("category", JSONObject().put("name", "Dogs2"))
 
         val updateRequest = HttpRequest.newBuilder()
             .PUT(HttpRequest.BodyPublishers.ofString(updateRequestBody.toString()))
@@ -177,7 +169,6 @@ class PetControllerTests(@ConnectionPostgreSQL val connection: JdbcConnection) {
         val httpClient = HttpClient.newHttpClient()
         val createRequestBody = JSONObject()
             .put("name", "doggie")
-            .put("category", JSONObject().put("name", "Dogs"))
 
         val createRequest = HttpRequest.newBuilder()
             .POST(HttpRequest.BodyPublishers.ofString(createRequestBody.toString()))
@@ -188,7 +179,6 @@ class PetControllerTests(@ConnectionPostgreSQL val connection: JdbcConnection) {
         val createResponse = httpClient.send(createRequest, HttpResponse.BodyHandlers.ofString())
         assertEquals(200, createResponse.statusCode(), createResponse.body())
         connection.assertCountsEquals(1, "pets")
-        connection.assertCountsEquals(1, "categories")
         val createResponseBody = JSONObject(createResponse.body())
 
         // when

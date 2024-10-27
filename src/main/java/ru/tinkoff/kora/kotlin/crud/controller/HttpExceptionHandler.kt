@@ -1,4 +1,4 @@
-package ru.tinkoff.kora.kotlin.example.crud.controller
+package ru.tinkoff.kora.kotlin.crud.controller
 
 import io.micrometer.core.instrument.config.validate.ValidationException
 import ru.tinkoff.kora.common.Component

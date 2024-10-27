@@ -1,14 +1,13 @@
-package ru.tinkoff.kora.kotlin.example.crud.controller
+package ru.tinkoff.kora.kotlin.crud.controller
 
 import ru.tinkoff.kora.common.Component
+import ru.tinkoff.kora.kotlin.crud.model.PetMapper
 import ru.tinkoff.kora.kotlin.crud.openapi.http.server.api.PetApiDelegate
 import ru.tinkoff.kora.kotlin.crud.openapi.http.server.api.PetApiResponses
 import ru.tinkoff.kora.kotlin.crud.openapi.http.server.model.MessageTO
 import ru.tinkoff.kora.kotlin.crud.openapi.http.server.model.PetCreateTO
 import ru.tinkoff.kora.kotlin.crud.openapi.http.server.model.PetUpdateTO
-import ru.tinkoff.kora.kotlin.example.crud.model.PetMapper
-import ru.tinkoff.kora.kotlin.example.crud.model.PetWithCategory
-import ru.tinkoff.kora.kotlin.example.crud.service.PetService
+import ru.tinkoff.kora.kotlin.crud.service.PetService
 
 @Component
 class PetDelegate(
@@ -23,7 +22,7 @@ class PetDelegate(
 
         val pet = petService.findByID(id)
         if (pet != null) {
-            val body = petMapper.petWithCategoryToPetTO(pet)
+            val body = petMapper.asDTO(pet)
             return PetApiResponses.GetPetByIdApiResponse.GetPetById200ApiResponse(body)
         } else {
             return PetApiResponses.GetPetByIdApiResponse.GetPetById404ApiResponse(notFound(id))
@@ -31,8 +30,8 @@ class PetDelegate(
     }
 
     override fun addPet(petCreateTO: PetCreateTO): PetApiResponses.AddPetApiResponse {
-        val pet: PetWithCategory = petService.add(petCreateTO)
-        val body = petMapper.petWithCategoryToPetTO(pet)
+        val pet = petService.add(petCreateTO)
+        val body = petMapper.asDTO(pet)
         return PetApiResponses.AddPetApiResponse.AddPet200ApiResponse(body)
     }
 
@@ -43,7 +42,7 @@ class PetDelegate(
 
         val updated = petService.update(id, petUpdateTO)
         if (updated != null) {
-            val body = petMapper.petWithCategoryToPetTO(updated)
+            val body = petMapper.asDTO(updated)
             return PetApiResponses.UpdatePetApiResponse.UpdatePet200ApiResponse(body)
         } else {
             return PetApiResponses.UpdatePetApiResponse.UpdatePet404ApiResponse(notFound(id))
@@ -57,7 +56,7 @@ class PetDelegate(
 
         return if (petService.delete(id)) {
             PetApiResponses.DeletePetApiResponse.DeletePet200ApiResponse(
-                MessageTO("Successfully deleted pet with ID: $id")
+                MessageTO("Successfully deleted Pet with ID: $id")
             )
         } else {
             PetApiResponses.DeletePetApiResponse.DeletePet404ApiResponse(notFound(id))

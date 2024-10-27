@@ -1,4 +1,4 @@
-package ru.tinkoff.kora.kotlin.example.crud
+package ru.tinkoff.kora.kotlin.crud
 
 import org.slf4j.LoggerFactory
 import org.testcontainers.containers.GenericContainer
@@ -23,10 +23,11 @@ class AppContainer : GenericContainer<AppContainer> {
             val appImage = System.getenv("IMAGE_KORA_KOTLIN_CRUD")
             return if (appImage != null && appImage.isNotBlank())
                 AppContainer(DockerImageName.parse(appImage))
-            else AppContainer(
-                ImageFromDockerfile("kora-kotlin-crud", true)
-                    .withDockerfile(Paths.get("Dockerfile").toAbsolutePath())
-            )
+            else
+                AppContainer(
+                    ImageFromDockerfile("kora-kotlin-crud", true)
+                        .withDockerfile(Paths.get("Dockerfile").toAbsolutePath())
+                )
         }
     }
 

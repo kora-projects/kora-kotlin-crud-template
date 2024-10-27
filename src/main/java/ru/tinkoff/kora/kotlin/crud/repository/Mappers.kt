@@ -1,9 +1,9 @@
-package ru.tinkoff.kora.kotlin.example.crud.repository
+package ru.tinkoff.kora.kotlin.crud.repository
 
 import ru.tinkoff.kora.common.Component
 import ru.tinkoff.kora.database.jdbc.mapper.parameter.JdbcParameterColumnMapper
 import ru.tinkoff.kora.database.jdbc.mapper.result.JdbcResultColumnMapper
-import ru.tinkoff.kora.kotlin.example.crud.model.Pet
+import ru.tinkoff.kora.kotlin.crud.model.Pet
 import java.sql.PreparedStatement
 import java.sql.ResultSet
 import java.sql.SQLException
