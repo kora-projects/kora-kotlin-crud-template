@@ -43,7 +43,8 @@ class BlackBoxTests(@ConnectionPostgreSQL val connection: JdbcConnection) {
                     "POSTGRES_JDBC_URL" to params.jdbcUrl(),
                     "POSTGRES_USER" to params.username(),
                     "POSTGRES_PASS" to params.password(),
-                    "CACHE_EXPIRE_WRITE" to "0s"
+                    "CACHE_MAX_SIZE" to "0",
+                    "RETRY_ATTEMPTS" to "0",
                 )
             )
             container.start()
@@ -114,6 +115,23 @@ class BlackBoxTests(@ConnectionPostgreSQL val connection: JdbcConnection) {
 
         val getResponseBody = JSONObject(getResponse.body())
         JSONAssert.assertEquals(createResponseBody.toString(), getResponseBody.toString(), JSONCompareMode.LENIENT)
+    }
+
+    @Test
+    fun getPetNotFound() {
+        // given
+        val httpClient = HttpClient.newHttpClient()
+
+        // when
+        val getRequest = HttpRequest.newBuilder()
+            .GET()
+            .uri(container.uri.resolve("/v3/pets/1"))
+            .timeout(Duration.ofSeconds(5))
+            .build()
+
+        // then
+        val getResponse = httpClient.send(getRequest, HttpResponse.BodyHandlers.ofString())
+        assertEquals(404, getResponse.statusCode(), getResponse.body())
     }
 
     @Test
