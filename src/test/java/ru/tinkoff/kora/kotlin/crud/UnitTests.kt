@@ -6,6 +6,7 @@ import io.mockk.verify
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
+import ru.tinkoff.kora.kotlin.crud.model.Pet
 import ru.tinkoff.kora.kotlin.crud.openapi.http.server.model.PetCreateTO
 import ru.tinkoff.kora.kotlin.crud.openapi.http.server.model.PetUpdateTO
 import ru.tinkoff.kora.kotlin.crud.repository.PetRepository

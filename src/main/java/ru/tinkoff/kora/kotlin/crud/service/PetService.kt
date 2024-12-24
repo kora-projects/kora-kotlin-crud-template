@@ -39,6 +39,13 @@ open class PetService(
     open fun update(id: Long, updateTO: PetUpdateTO): Pet? {
         val existing = petRepository.findById(id) ?: return null
 
+        if (existing.name == updateTO.name
+            && updateTO.status != null
+            && existing.status == toStatus(updateTO.status)
+        ) {
+            return existing
+        }
+
         val status = if (updateTO.status == null) existing.status else toStatus(updateTO.status)
         val result = Pet(existing.id, updateTO.name, status)
         petRepository.update(result)
