@@ -42,14 +42,7 @@
 
 Собрать образ приложения:
 ```shell
-docker build -t kora-kotlin-crud .
-```
-
-## Run
-
-Запустить локально:
-```shell
-./gradlew run
+docker build -t kora-kotlin-crud-template .
 ```
 
 ## Migration
@@ -57,6 +50,24 @@ docker build -t kora-kotlin-crud .
 Миграции вызываются с помощью Flyway Gradle Plugin:
 ```shell
 ./gradlew flywayMigrate
+```
+
+## Run
+
+Перед запуском локально требуется запустить базу Postgres и накатить миграции.
+
+Запустить локально:
+```shell
+./gradlew run
+```
+
+## Run Docker-Compose
+
+Требуется сначала собрать артефакт.
+
+Запустить как docker-compose:
+```shell
+docker-compose up
 ```
 
 ## Test
