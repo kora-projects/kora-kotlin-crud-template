@@ -22,9 +22,14 @@ plugins {
 group = property("groupId")!!
 version = property("koraVersion")!!
 
+application {
+    applicationName = "application"
+    mainClass.set("ru.tinkoff.kora.kotlin.crud.ApplicationKt")
+    applicationDefaultJvmArgs = listOf("-Dfile.encoding=UTF-8")
+}
+
 kotlin {
     jvmToolchain { languageVersion.set(JavaLanguageVersion.of(17)) }
-    sourceSets.main { kotlin.srcDir("build/generated/openapi") }
     sourceSets.main { kotlin.srcDir("build/generated/source/kapt/main") }
     sourceSets.main { kotlin.srcDir("build/generated/ksp/main/kotlin") }
     sourceSets.test { kotlin.srcDir("build/generated/ksp/test/kotlin") }
@@ -47,7 +52,7 @@ dependencies {
 
     kapt("org.mapstruct:mapstruct-processor:1.5.5.Final")
     ksp("ru.tinkoff.kora:symbol-processors")
-    ksp("org.slf4j:slf4j-simple:2.0.11")
+    ksp("org.slf4j:slf4j-simple:2.0.16")
 
     implementation("ru.tinkoff.kora:http-server-undertow")
     implementation("ru.tinkoff.kora:database-jdbc")
@@ -73,10 +78,31 @@ dependencies {
     testImplementation("org.testcontainers:junit-jupiter:1.19.8")
 }
 
-application {
-    applicationName = "application"
-    mainClass.set("ru.tinkoff.kora.kotlin.crud.ApplicationKt")
-    applicationDefaultJvmArgs = listOf("-Dfile.encoding=UTF-8")
+val openApiGenerateHttpServer = tasks.register<GenerateTask>("openApiGenerateHttpServer") {
+    generatorName = "kora"
+    group = "openapi tools"
+    inputSpec = "$projectDir/src/main/resources/openapi/http-server.yaml"
+    outputDir = "$buildDir/generated/openapi"
+    val corePackage = "ru.tinkoff.kora.kotlin.crud.openapi.http.server"
+    apiPackage = "${corePackage}.api"
+    modelPackage = "${corePackage}.model"
+    invokerPackage = "${corePackage}.invoker"
+    configOptions = mapOf(
+        "mode" to "kotlin-server",
+        "enableServerValidation" to "true",
+    )
+}
+kotlin.sourceSets.main { kotlin.srcDir(openApiGenerateHttpServer.get().outputDir) }
+tasks.withType<KspTask> { dependsOn(openApiGenerateHttpServer) }
+
+ksp {
+    allowSourcesFromOtherPlugins = true // Use KAPT sources for MapStruct
+}
+
+// Run KAPT before KSP for MapStruct
+tasks.withType<KspTask> {
+    dependsOn(tasks.named("kaptGenerateStubsKotlin").get())
+    dependsOn(tasks.named("kaptKotlin").get())
 }
 
 tasks.distTar {
@@ -96,29 +122,8 @@ tasks.withType<JavaExec> {
     )
 }
 
-tasks.register("openApiGenerateHttpServer", GenerateTask::class) {
-    generatorName = "kora"
-    group = "openapi tools"
-    inputSpec = "$projectDir/src/main/resources/openapi/http-server.yaml"
-    outputDir = "$buildDir/generated/openapi"
-    apiPackage = "ru.tinkoff.kora.kotlin.crud.openapi.http.server.api"
-    modelPackage = "ru.tinkoff.kora.kotlin.crud.openapi.http.server.model"
-    invokerPackage = "ru.tinkoff.kora.kotlin.crud.openapi.http.server.invoker"
-    configOptions = mapOf(
-        "mode" to "kotlin-server",
-        "enableServerValidation" to "true"
-    )
-}
-
-ksp {
-    allowSourcesFromOtherPlugins = true
-}
-tasks.withType<KspTask> {
-    dependsOn(tasks.named("kaptKotlin").get())
-    tasks.named("kaptGenerateStubsKotlin").get()
-}
-tasks.withType<KotlinCompile>().configureEach {
-    dependsOn(tasks.named("openApiGenerateHttpServer"))
+tasks.distTar {
+    archiveFileName.set("application.tar")
 }
 
 tasks.test {
