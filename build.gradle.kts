@@ -105,10 +105,6 @@ tasks.withType<KspTask> {
     dependsOn(tasks.named("kaptKotlin").get())
 }
 
-tasks.distTar {
-    archiveFileName.set("application.tar")
-}
-
 val postgresHost: String by project
 val postgresPort: String by project
 val postgresDatabase: String by project
