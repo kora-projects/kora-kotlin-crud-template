@@ -1,6 +1,5 @@
 import com.google.devtools.ksp.gradle.KspTask
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 buildscript {
@@ -10,13 +9,12 @@ buildscript {
 }
 
 plugins {
-    id("org.openapi.generator") version ("7.4.0")
+    id("org.openapi.generator") version ("7.14.0")
     id("application")
     id("jacoco")
-    kotlin("kapt") version ("1.9.10")
-    kotlin("jvm") version ("1.9.10")
+    kotlin("jvm") version ("1.9.25")
+    id("com.google.devtools.ksp") version ("1.9.25-1.0.20")
     id("org.flywaydb.flyway") version ("8.4.2")
-    id("com.google.devtools.ksp") version ("1.9.10-1.0.13")
 }
 
 group = property("groupId")!!
@@ -30,7 +28,6 @@ application {
 
 kotlin {
     jvmToolchain { languageVersion.set(JavaLanguageVersion.of(17)) }
-    sourceSets.main { kotlin.srcDir("build/generated/source/kapt/main") }
     sourceSets.main { kotlin.srcDir("build/generated/ksp/main/kotlin") }
     sourceSets.test { kotlin.srcDir("build/generated/ksp/test/kotlin") }
 }
@@ -45,12 +42,12 @@ configurations {
 
 repositories {
     mavenCentral()
+    maven { url = uri("https://central.sonatype.com/repository/maven-snapshots") }
 }
 
 dependencies {
     koraBom(platform("ru.tinkoff.kora:kora-parent:${property("koraVersion")}"))
 
-    kapt("org.mapstruct:mapstruct-processor:1.5.5.Final")
     ksp("ru.tinkoff.kora:symbol-processors")
     ksp("org.slf4j:slf4j-simple:2.0.16")
 
@@ -67,7 +64,6 @@ dependencies {
     implementation("ru.tinkoff.kora:logging-logback")
 
     implementation("org.postgresql:postgresql:42.7.2")
-    implementation("org.mapstruct:mapstruct:1.5.5.Final")
 
     testImplementation("org.json:json:20231013")
     testImplementation("org.skyscreamer:jsonassert:1.5.1")
@@ -97,12 +93,6 @@ tasks.withType<KspTask> { dependsOn(openApiGenerateHttpServer) }
 
 ksp {
     allowSourcesFromOtherPlugins = true // Use KAPT sources for MapStruct
-}
-
-// Run KAPT before KSP for MapStruct
-tasks.withType<KspTask> {
-    dependsOn(tasks.named("kaptGenerateStubsKotlin").get())
-    dependsOn(tasks.named("kaptKotlin").get())
 }
 
 val postgresHost: String by project
