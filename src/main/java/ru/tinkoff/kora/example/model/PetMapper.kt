@@ -1,8 +1,8 @@
-package ru.tinkoff.kora.kotlin.crud.model
+package ru.tinkoff.kora.example.model
 
 import ru.tinkoff.kora.common.Component
-import ru.tinkoff.kora.kotlin.crud.openapi.http.server.model.PetTO
-import ru.tinkoff.kora.kotlin.crud.openapi.http.server.model.PetTO.StatusEnum
+import ru.tinkoff.kora.example.openapi.http.server.model.PetTO
+import ru.tinkoff.kora.example.openapi.http.server.model.PetTO.StatusEnum
 
 @Component
 class PetMapper {

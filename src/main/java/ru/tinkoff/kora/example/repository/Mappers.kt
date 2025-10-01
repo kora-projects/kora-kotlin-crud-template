@@ -1,9 +1,9 @@
-package ru.tinkoff.kora.kotlin.crud.repository
+package ru.tinkoff.kora.example.repository
 
 import ru.tinkoff.kora.common.Component
 import ru.tinkoff.kora.database.jdbc.mapper.parameter.JdbcParameterColumnMapper
 import ru.tinkoff.kora.database.jdbc.mapper.result.JdbcResultColumnMapper
-import ru.tinkoff.kora.kotlin.crud.model.Pet
+import ru.tinkoff.kora.example.model.Pet
 import java.sql.PreparedStatement
 import java.sql.ResultSet
 import java.sql.SQLException
@@ -25,7 +25,8 @@ class PetStatusParameterMapper : JdbcParameterColumnMapper<Pet.Status> {
 @Component
 class PetStatusResultMapper : JdbcResultColumnMapper<Pet.Status> {
 
-    private val statuses: Array<Pet.Status> = Pet.Status.entries.toTypedArray()
+    private val statuses: Array<Pet.Status> =
+        Pet.Status.entries.toTypedArray()
 
     @Throws(SQLException::class)
     override fun apply(row: ResultSet, index: Int): Pet.Status {

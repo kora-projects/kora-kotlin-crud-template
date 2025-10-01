@@ -1,13 +1,13 @@
-package ru.tinkoff.kora.kotlin.crud.service
+package ru.tinkoff.kora.example.service
 
 import ru.tinkoff.kora.cache.annotation.CacheInvalidate
 import ru.tinkoff.kora.cache.annotation.CachePut
 import ru.tinkoff.kora.cache.annotation.Cacheable
 import ru.tinkoff.kora.common.Component
-import ru.tinkoff.kora.kotlin.crud.model.Pet
-import ru.tinkoff.kora.kotlin.crud.openapi.http.server.model.PetCreateTO
-import ru.tinkoff.kora.kotlin.crud.openapi.http.server.model.PetUpdateTO
-import ru.tinkoff.kora.kotlin.crud.repository.PetRepository
+import ru.tinkoff.kora.example.model.Pet
+import ru.tinkoff.kora.example.openapi.http.server.model.PetCreateTO
+import ru.tinkoff.kora.example.openapi.http.server.model.PetUpdateTO
+import ru.tinkoff.kora.example.repository.PetRepository
 import ru.tinkoff.kora.resilient.circuitbreaker.annotation.CircuitBreaker
 import ru.tinkoff.kora.resilient.retry.annotation.Retry
 import ru.tinkoff.kora.resilient.timeout.annotation.Timeout
@@ -28,7 +28,8 @@ open class PetService(
     @CircuitBreaker("pet")
     @Timeout("pet")
     open fun add(createTO: PetCreateTO): Pet {
-        val pet = Pet(0, createTO.name, Pet.Status.AVAILABLE)
+        val pet =
+            Pet(0, createTO.name, Pet.Status.AVAILABLE)
         val petId = petRepository.insert(pet)
         return Pet(petId.toLong(), pet.name, pet.status)
     }

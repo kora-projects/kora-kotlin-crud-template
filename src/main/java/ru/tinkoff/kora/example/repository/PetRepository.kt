@@ -1,11 +1,11 @@
-package ru.tinkoff.kora.kotlin.crud.repository
+package ru.tinkoff.kora.example.repository
 
 import ru.tinkoff.kora.database.common.UpdateCount
 import ru.tinkoff.kora.database.common.annotation.Id
 import ru.tinkoff.kora.database.common.annotation.Query
 import ru.tinkoff.kora.database.common.annotation.Repository
 import ru.tinkoff.kora.database.jdbc.JdbcRepository
-import ru.tinkoff.kora.kotlin.crud.model.Pet
+import ru.tinkoff.kora.example.model.Pet
 
 @Repository
 interface PetRepository : JdbcRepository {
