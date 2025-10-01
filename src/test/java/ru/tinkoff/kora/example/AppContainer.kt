@@ -1,4 +1,4 @@
-package ru.tinkoff.kora.kotlin.crud
+package ru.tinkoff.kora.example
 
 import org.slf4j.LoggerFactory
 import org.testcontainers.containers.GenericContainer

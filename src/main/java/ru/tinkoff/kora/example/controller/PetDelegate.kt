@@ -1,4 +1,4 @@
-package ru.tinkoff.kora.kotlin.crud.controller
+package ru.tinkoff.kora.example.controller
 
 import ru.tinkoff.kora.common.Component
 import ru.tinkoff.kora.kotlin.crud.model.PetMapper
@@ -16,10 +16,6 @@ class PetDelegate(
 ) : PetApiDelegate {
 
     override fun getPetById(id: Long): PetApiResponses.GetPetByIdApiResponse {
-        if (id < 0) {
-            return PetApiResponses.GetPetByIdApiResponse.GetPetById400ApiResponse(malformedId(id))
-        }
-
         val pet = petService.findByID(id)
         if (pet != null) {
             val body = petMapper.asDTO(pet)
@@ -36,10 +32,6 @@ class PetDelegate(
     }
 
     override fun updatePet(id: Long, petUpdateTO: PetUpdateTO): PetApiResponses.UpdatePetApiResponse {
-        if (id < 0) {
-            return PetApiResponses.UpdatePetApiResponse.UpdatePet400ApiResponse(malformedId(id))
-        }
-
         val updated = petService.update(id, petUpdateTO)
         if (updated != null) {
             val body = petMapper.asDTO(updated)
@@ -50,10 +42,6 @@ class PetDelegate(
     }
 
     override fun deletePet(id: Long): PetApiResponses.DeletePetApiResponse {
-        if (id < 0) {
-            return PetApiResponses.DeletePetApiResponse.DeletePet400ApiResponse(malformedId(id))
-        }
-
         return if (petService.delete(id)) {
             PetApiResponses.DeletePetApiResponse.DeletePet200ApiResponse(
                 MessageTO("Successfully deleted Pet with ID: $id")

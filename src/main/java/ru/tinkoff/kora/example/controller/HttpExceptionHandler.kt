@@ -1,4 +1,4 @@
-package ru.tinkoff.kora.kotlin.crud.controller
+package ru.tinkoff.kora.example.controller
 
 import io.micrometer.core.instrument.config.validate.ValidationException
 import org.slf4j.LoggerFactory

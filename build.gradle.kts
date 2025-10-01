@@ -9,35 +9,21 @@ buildscript {
 }
 
 plugins {
-    id("org.openapi.generator") version ("7.14.0")
     id("application")
     id("jacoco")
     kotlin("jvm") version ("1.9.25")
     id("com.google.devtools.ksp") version ("1.9.25-1.0.20")
+    id("org.openapi.generator") version ("7.14.0")
     id("org.flywaydb.flyway") version ("8.4.2")
 }
 
 group = property("groupId")!!
 version = property("koraVersion")!!
 
-application {
-    applicationName = "application"
-    mainClass.set("ru.tinkoff.kora.kotlin.crud.ApplicationKt")
-    applicationDefaultJvmArgs = listOf("-Dfile.encoding=UTF-8")
-}
-
-kotlin {
-    jvmToolchain { languageVersion.set(JavaLanguageVersion.of(17)) }
-    sourceSets.main { kotlin.srcDir("build/generated/ksp/main/kotlin") }
-    sourceSets.test { kotlin.srcDir("build/generated/ksp/test/kotlin") }
-}
-
 val koraBom: Configuration by configurations.creating
 configurations {
-    ksp.get().extendsFrom(koraBom)
-    compileOnly.get().extendsFrom(koraBom)
-    api.get().extendsFrom(koraBom)
-    implementation.get().extendsFrom(koraBom)
+    ksp.get().extendsFrom(koraBom); compileOnly.get().extendsFrom(koraBom)
+    api.get().extendsFrom(koraBom); implementation.get().extendsFrom(koraBom)
 }
 
 repositories {
@@ -63,7 +49,7 @@ dependencies {
     implementation("ru.tinkoff.kora:openapi-management")
     implementation("ru.tinkoff.kora:logging-logback")
 
-    implementation("org.postgresql:postgresql:42.7.2")
+    implementation("org.postgresql:postgresql:42.7.7")
 
     testImplementation("org.json:json:20231013")
     testImplementation("org.skyscreamer:jsonassert:1.5.1")
@@ -74,12 +60,24 @@ dependencies {
     testImplementation("org.testcontainers:junit-jupiter:1.19.8")
 }
 
+kotlin {
+    jvmToolchain { languageVersion.set(JavaLanguageVersion.of(17)) }
+    sourceSets.main { kotlin.srcDir("build/generated/ksp/main/kotlin") }
+    sourceSets.test { kotlin.srcDir("build/generated/ksp/test/kotlin") }
+}
+
+application {
+    applicationName = "application"
+    mainClass.set("ru.tinkoff.kora.kotlin.crud.ApplicationKt")
+    applicationDefaultJvmArgs = listOf("-Dfile.encoding=UTF-8")
+}
+
 val openApiGenerateHttpServer = tasks.register<GenerateTask>("openApiGenerateHttpServer") {
     generatorName = "kora"
     group = "openapi tools"
     inputSpec = "$projectDir/src/main/resources/openapi/http-server.yaml"
     outputDir = "$buildDir/generated/openapi"
-    val corePackage = "ru.tinkoff.kora.kotlin.crud.openapi.http.server"
+    val corePackage = "ru.tinkoff.kora.example.openapi.http.server"
     apiPackage = "${corePackage}.api"
     modelPackage = "${corePackage}.model"
     invokerPackage = "${corePackage}.invoker"
@@ -112,6 +110,7 @@ tasks.distTar {
     archiveFileName.set("application.tar")
 }
 
+val jacocoExcludeSet = setOf("**/generated/**", "**/Application*", "**/\$*")
 tasks.test {
     dependsOn("distTar")
 
@@ -131,12 +130,11 @@ tasks.test {
         html.required = false
         junitXml.required = false
     }
-}
 
-tasks.jacocoTestReport {
-    reports {
-        xml.required = true
-        html.outputLocation = layout.buildDirectory.dir("jacocoHtml")
+    exclude("**/\$*")
+
+    jacoco {
+        jacocoExcludeSet.forEach { exclude(it) }
     }
 }
 
@@ -145,4 +143,14 @@ flyway {
     user = postgresUser
     password = postgresPassword
     locations = arrayOf("classpath:db/migration")
+}
+
+tasks.jacocoTestReport {
+    reports {
+        xml.required = true
+        html.outputLocation = layout.buildDirectory.dir("jacocoHtml")
+    }
+    classDirectories.setFrom(sourceSets.main.get().output.asFileTree.matching {
+        jacocoExcludeSet.forEach { exclude(it) }
+    })
 }

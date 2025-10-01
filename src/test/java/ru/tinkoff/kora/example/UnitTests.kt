@@ -1,4 +1,4 @@
-package ru.tinkoff.kora.kotlin.crud
+package ru.tinkoff.kora.example
 
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -6,7 +6,7 @@ import io.mockk.verify
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
-import ru.tinkoff.kora.kotlin.crud.model.Pet
+import ru.tinkoff.kora.example.model.Pet
 import ru.tinkoff.kora.kotlin.crud.openapi.http.server.model.PetCreateTO
 import ru.tinkoff.kora.kotlin.crud.openapi.http.server.model.PetUpdateTO
 import ru.tinkoff.kora.kotlin.crud.repository.PetRepository
@@ -18,18 +18,17 @@ import ru.tinkoff.kora.test.extension.junit5.KoraConfigModification
 import ru.tinkoff.kora.test.extension.junit5.TestComponent
 
 @KoraAppTest(Application::class)
-class UnitTests : KoraAppTestConfigModifier {
-
+class UnitTests(
     @field:MockK
     @TestComponent
-    lateinit var petCache: PetCache
-
+    val petCache: PetCache,
     @field:MockK
     @TestComponent
-    lateinit var petRepository: PetRepository
-
+    val petRepository: PetRepository,
     @TestComponent
-    lateinit var petService: PetService
+    val petService: PetService,
+) : KoraAppTestConfigModifier {
+
 
     override fun config(): KoraConfigModification = KoraConfigModification.ofString(
         """
