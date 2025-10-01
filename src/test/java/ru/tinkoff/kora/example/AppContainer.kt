@@ -34,7 +34,7 @@ class AppContainer : GenericContainer<AppContainer> {
     override fun configure() {
         super.configure()
         withExposedPorts(8080, 8085)
-        withStartupTimeout(Duration.ofSeconds(120))
+        withStartupTimeout(Duration.ofSeconds(10))
         withLogConsumer(Slf4jLogConsumer(LoggerFactory.getLogger(AppContainer::class.java)))
         waitingFor(Wait.forHttp("/system/readiness").forPort(8085).forStatusCode(200))
     }

@@ -10,7 +10,7 @@ import ru.tinkoff.kora.database.jdbc.EntityJdbc
 data class Pet(
     @field:Column("id") @field:Id val id: Long,
     @field:Column("name") val name: String,
-    @field:Column("status") val status: ru.tinkoff.kora.example.model.Pet.Status
+    @field:Column("status") val status: Status
 ) {
     enum class Status(val code: Int) {
         AVAILABLE(0),

@@ -51,6 +51,8 @@ dependencies {
 
     implementation("org.postgresql:postgresql:42.7.7")
 
+    kspTest("ru.tinkoff.kora:symbol-processors")
+
     testImplementation("org.json:json:20231013")
     testImplementation("org.skyscreamer:jsonassert:1.5.1")
 
@@ -68,7 +70,7 @@ kotlin {
 
 application {
     applicationName = "application"
-    mainClass.set("ru.tinkoff.kora.kotlin.crud.ApplicationKt")
+    mainClass.set("ru.tinkoff.kora.example.ApplicationKt")
     applicationDefaultJvmArgs = listOf("-Dfile.encoding=UTF-8")
 }
 
@@ -90,7 +92,7 @@ kotlin.sourceSets.main { kotlin.srcDir(openApiGenerateHttpServer.get().outputDir
 tasks.withType<KspTask> { dependsOn(openApiGenerateHttpServer) }
 
 ksp {
-    allowSourcesFromOtherPlugins = true // Use KAPT sources for MapStruct
+    arg("kora.app.submodule.enabled", "true") // Only for integration tests
 }
 
 val postgresHost: String by project

@@ -10,10 +10,10 @@ import java.sql.SQLException
 import java.sql.Types
 
 @Component
-class PetStatusParameterMapper : JdbcParameterColumnMapper<ru.tinkoff.kora.example.model.Pet.Status> {
+class PetStatusParameterMapper : JdbcParameterColumnMapper<Pet.Status> {
 
     @Throws(SQLException::class)
-    override fun set(stmt: PreparedStatement, index: Int, value: ru.tinkoff.kora.example.model.Pet.Status?) {
+    override fun set(stmt: PreparedStatement, index: Int, value: Pet.Status?) {
         if (value == null) {
             stmt.setNull(index, Types.INTEGER)
         } else {
@@ -23,12 +23,13 @@ class PetStatusParameterMapper : JdbcParameterColumnMapper<ru.tinkoff.kora.examp
 }
 
 @Component
-class PetStatusResultMapper : JdbcResultColumnMapper<ru.tinkoff.kora.example.model.Pet.Status> {
+class PetStatusResultMapper : JdbcResultColumnMapper<Pet.Status> {
 
-    private val statuses: Array<ru.tinkoff.kora.example.model.Pet.Status> = ru.tinkoff.kora.example.model.Pet.Status.entries.toTypedArray()
+    private val statuses: Array<Pet.Status> =
+        Pet.Status.entries.toTypedArray()
 
     @Throws(SQLException::class)
-    override fun apply(row: ResultSet, index: Int): ru.tinkoff.kora.example.model.Pet.Status {
+    override fun apply(row: ResultSet, index: Int): Pet.Status {
         val code = row.getInt(index)
         for (status in statuses) {
             if (code == status.code) {

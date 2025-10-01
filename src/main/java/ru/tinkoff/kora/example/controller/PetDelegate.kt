@@ -1,13 +1,13 @@
 package ru.tinkoff.kora.example.controller
 
 import ru.tinkoff.kora.common.Component
-import ru.tinkoff.kora.kotlin.crud.model.PetMapper
-import ru.tinkoff.kora.kotlin.crud.openapi.http.server.api.PetApiDelegate
-import ru.tinkoff.kora.kotlin.crud.openapi.http.server.api.PetApiResponses
-import ru.tinkoff.kora.kotlin.crud.openapi.http.server.model.MessageTO
-import ru.tinkoff.kora.kotlin.crud.openapi.http.server.model.PetCreateTO
-import ru.tinkoff.kora.kotlin.crud.openapi.http.server.model.PetUpdateTO
-import ru.tinkoff.kora.kotlin.crud.service.PetService
+import ru.tinkoff.kora.example.model.PetMapper
+import ru.tinkoff.kora.example.openapi.http.server.api.PetApiDelegate
+import ru.tinkoff.kora.example.openapi.http.server.api.PetApiResponses
+import ru.tinkoff.kora.example.openapi.http.server.model.MessageTO
+import ru.tinkoff.kora.example.openapi.http.server.model.PetCreateTO
+import ru.tinkoff.kora.example.openapi.http.server.model.PetUpdateTO
+import ru.tinkoff.kora.example.service.PetService
 
 @Component
 class PetDelegate(

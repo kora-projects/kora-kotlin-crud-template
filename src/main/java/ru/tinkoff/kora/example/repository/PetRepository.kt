@@ -11,14 +11,14 @@ import ru.tinkoff.kora.example.model.Pet
 interface PetRepository : JdbcRepository {
 
     @Query("SELECT %{return#selects} FROM %{return#table} WHERE id = :id")
-    fun findById(id: Long): ru.tinkoff.kora.example.model.Pet?
+    fun findById(id: Long): Pet?
 
     @Id
     @Query("INSERT INTO %{entity#inserts -= id}")
-    fun insert(entity: ru.tinkoff.kora.example.model.Pet): Int
+    fun insert(entity: Pet): Int
 
     @Query("UPDATE %{entity#table} SET %{entity#updates} WHERE %{entity#where = @id}")
-    fun update(entity: ru.tinkoff.kora.example.model.Pet)
+    fun update(entity: Pet)
 
     @Query("DELETE FROM pets WHERE id = :id")
     fun deleteById(id: Long): UpdateCount

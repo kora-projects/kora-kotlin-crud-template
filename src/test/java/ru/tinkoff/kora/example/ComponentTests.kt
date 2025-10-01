@@ -6,29 +6,29 @@ import io.mockk.verify
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
-import ru.tinkoff.kora.example.model.Pet
-import ru.tinkoff.kora.kotlin.crud.openapi.http.server.model.PetCreateTO
-import ru.tinkoff.kora.kotlin.crud.openapi.http.server.model.PetUpdateTO
-import ru.tinkoff.kora.kotlin.crud.repository.PetRepository
-import ru.tinkoff.kora.kotlin.crud.service.PetCache
-import ru.tinkoff.kora.kotlin.crud.service.PetService
+import ru.tinkoff.kora.example.openapi.http.server.model.PetCreateTO
+import ru.tinkoff.kora.example.openapi.http.server.model.PetUpdateTO
+import ru.tinkoff.kora.example.repository.PetRepository
+import ru.tinkoff.kora.example.service.PetCache
+import ru.tinkoff.kora.example.service.PetService
 import ru.tinkoff.kora.test.extension.junit5.KoraAppTest
 import ru.tinkoff.kora.test.extension.junit5.KoraAppTestConfigModifier
 import ru.tinkoff.kora.test.extension.junit5.KoraConfigModification
 import ru.tinkoff.kora.test.extension.junit5.TestComponent
 
 @KoraAppTest(Application::class)
-class UnitTests(
-    @field:MockK
-    @TestComponent
-    val petCache: PetCache,
-    @field:MockK
-    @TestComponent
-    val petRepository: PetRepository,
-    @TestComponent
-    val petService: PetService,
-) : KoraAppTestConfigModifier {
+class ComponentTests : KoraAppTestConfigModifier {
 
+    @field:MockK
+    @TestComponent
+    private lateinit var petCache: PetCache
+
+    @field:MockK
+    @TestComponent
+    private lateinit var petRepository: PetRepository
+
+    @TestComponent
+    private lateinit var petService: PetService
 
     override fun config(): KoraConfigModification = KoraConfigModification.ofString(
         """
